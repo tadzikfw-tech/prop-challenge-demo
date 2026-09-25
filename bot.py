@@ -1,22 +1,29 @@
 #!/usr/bin/env python3
-"""Demo: nasza (jedyna sprawdzona) strategia trendowa BTC pod typowymi zasadami
+"""Demo: nasza (jedyna sprawdzona) strategia trendowa pod typowymi zasadami
 "challenge'u" prop firmy. Raz dziennie, tylko biblioteka standardowa.
 
 WAŻNE: to symulacja na WIRTUALNYCH pieniądzach, bez żadnej prawdziwej firmy,
 prawdziwego konta ani prawdziwych zleceń. Zasady (cel zysku, limity strat) są
 reprezentatywne dla typowych firm (np. FTMO-style), nie kopią żadnej konkretnej.
 
-STRATEGIA ZABLOKOWANA (nie zmieniamy jej w trakcie testu) - te same 9 reguł
-trendu co w bocie "btc-trend-demo": każda głosuje "trend rośnie" (1) / "nie" (0),
-udział BTC w koncie = (głosy/9) x 50%. Bez dźwigni, bez shortów.
+INSTRUMENT: S&P 500 (indeks ^GSPC / u brokerów CFD "US500.cash"), nie BTC.
+Zmieniono z krypto, bo: (1) większość traderów faktycznie zarabia na indeksach,
+nie na krypto, (2) koszty realne są dużo niższe (FTMO: zero prowizji na indeksach,
+spread ~0,5 pkt / ~7400 pkt ≈ 0,007% - rząd wielkości mniej niż na BTC), (3) S&P
+500 prawie nigdy nie rusza się >=5% w jeden dzień (BTC robił to co ~24 dni), więc
+limit dzienny straty jest dużo rzadziej łamany przypadkiem, a nie przez błąd
+strategii.
 
-Dlaczego 50%, nie 100%: backtest 2020-2026 pod tymi samymi zasadami pokazał, że
-100% ekspozycji i 50% dają podobny wynik finansowy netto, ale przy 50% mniejszy
-odsetek dni łamie limit dzienny (sam BTC potrafi spaść >=5% w jeden dzień średnio
-raz na ok. 24 dni - przy pełnej ekspozycji to od razu koniec próby). Niższe
-poziomy (20-35%) wypadały w backteście "lepiej" tylko dlatego, że próbka prób
-była zbyt mała, by cokolwiek z niej wnioskować. 50% to ostatnia decyzja przed
-zablokowaniem - dalej reguł (w tym tego mnożnika) już nie zmieniamy.
+STRATEGIA ZABLOKOWANA (nie zmieniamy jej w trakcie testu) - te same 9 reguł
+trendu co w bocie na BTC (przeniesione 1:1, działają na dowolnej serii cen
+dziennych): każda głosuje "trend rośnie" (1) / "nie" (0), udział instrumentu
+w koncie = (głosy/9) x 50%. Bez dźwigni, bez shortów.
+
+Ekspozycja zostaje na 50% (nie re-optymalizowana pod S&P 500), mimo że krótki
+(24-letni, mało zdarzeń) backtest sugerował, że inny mnożnik wypadłby "lepiej" -
+próbka ukończonych prób jest zbyt mała (rząd kilkunastu), żeby to było coś
+więcej niż szum. Trzymamy się raz zablokowanej decyzji zamiast dopasowywać
+parametr pod każdy nowy rynek z osobna.
 
 ZASADY "CHALLENGE'U" (typowe, nie żadnej konkretnej firmy):
   - wirtualny kapitał konta: 10 000 USD
@@ -26,6 +33,9 @@ ZASADY "CHALLENGE'U" (typowe, nie żadnej konkretnej firmy):
     10% od SZCZYTU konta (faza "sfinansowana" - trailing, jak u wielu firm)
   - podział zysku na koncie "sfinansowanym": 80% dla tradera / 20% dla firmy
   - złamanie limitu = koniec próby/konta, start od nowa następnego dnia
+  - typ konta: "Swing" (u FTMO dostępny tylko w 2-Step) - zwolniony z
+    obowiązkowego zamykania pozycji na weekend/noc; dźwignia w Swing na
+    indeksach i tak nie ogranicza nas, bo nigdy nie przekraczamy 50% ekspozycji
 """
 import os, json, csv, time, datetime, urllib.request
 
@@ -97,15 +107,15 @@ RULES = [
     ("Cena wyższa niż 30 dni temu", lambda c: r_mom(c, 30)),
     ("Cena wyższa niż 90 dni temu", lambda c: r_mom(c, 90)),
 ]
-FEE, SLIP = 0.001, 0.0003
+FEE, SLIP = 0.0, 0.0001   # S&P 500 (US500.cash): zero prowizji, spread ~0,5pkt / ~7400 ≈ 0,007% - realnie nawet niżej niż tu
 
 
 def compute_series(closes):
     return [f(closes) for _, f in RULES]
 
 
-EXPOSURE_CAP = 0.50   # maks. udział BTC w koncie (patrz uzasadnienie w docstringu pliku)
-WEEKEND_FLAT_FUNDED = True   # konto "sfinansowane": zamykaj pozycje na weekend (reguła realnych firm)
+EXPOSURE_CAP = 0.50   # maks. udział S&P 500 w koncie (patrz uzasadnienie w docstringu pliku)
+WEEKEND_FLAT_FUNDED = False   # konto typu "Swing" (FTMO) - zwolnione z wymuszonego zamykania na weekend
 
 
 def target_at(series, i):
@@ -127,31 +137,33 @@ def eff_target(phase, ts, series, i):
 
 # ------------------------------------------------------------------ dane
 def _get(url):
-    req = urllib.request.Request(url, headers={"User-Agent": "prop-challenge-demo/1.0"})
+    req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0 (prop-challenge-demo)"})
     with urllib.request.urlopen(req, timeout=30) as r:
         return json.loads(r.read().decode("utf-8"))
 
 
-def src_binance_vision():
-    return [(int(r[0]), float(r[4])) for r in _get("https://data-api.binance.vision/api/v3/klines?symbol=BTCUSDT&interval=1d&limit=1000")]
+def src_yahoo(host):
+    d = _get("https://%s.finance.yahoo.com/v8/finance/chart/%%5EGSPC?range=5y&interval=1d" % host)
+    res = d["chart"]["result"][0]
+    ts = res["timestamp"]
+    closes = res["indicators"]["quote"][0]["close"]
+    return [(t * 1000, c) for t, c in zip(ts, closes) if c is not None]
 
 
-def src_binance():
-    return [(int(r[0]), float(r[4])) for r in _get("https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1d&limit=1000")]
+def src_stooq():
+    import csv as _csv, io as _io
+    req = urllib.request.Request("https://stooq.com/q/d/l/?s=%5Espx&i=d", headers={"User-Agent": "Mozilla/5.0"})
+    with urllib.request.urlopen(req, timeout=30) as r:
+        text = r.read().decode("utf-8")
+    rows = list(_csv.DictReader(_io.StringIO(text)))
+    out = []
+    for row in rows[-1000:]:
+        ts = int(datetime.datetime.strptime(row["Date"], "%Y-%m-%d").replace(tzinfo=datetime.timezone.utc).timestamp() * 1000)
+        out.append((ts, float(row["Close"])))
+    return out
 
 
-def src_kraken():
-    res = _get("https://api.kraken.com/0/public/OHLC?pair=XBTUSD&interval=1440")["result"]
-    rows = [v for k, v in res.items() if k != "last"][0]
-    return [(int(r[0]) * 1000, float(r[4])) for r in rows]
-
-
-def src_bitstamp():
-    rows = _get("https://www.bitstamp.net/api/v2/ohlc/btcusd/?step=86400&limit=1000")["data"]["ohlc"]
-    return [(int(r["timestamp"]) * 1000, float(r["close"])) for r in rows]
-
-
-SOURCES = [("Binance", src_binance_vision), ("Binance", src_binance), ("Kraken", src_kraken), ("Bitstamp", src_bitstamp)]
+SOURCES = [("Yahoo Finance", lambda: src_yahoo("query1")), ("Yahoo Finance", lambda: src_yahoo("query2")), ("Stooq", src_stooq)]
 
 
 def fetch_daily():
@@ -382,7 +394,7 @@ table{width:100%%;border-collapse:collapse;font-size:13px}th,td{padding:6px 8px;
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}.k{color:#8b98ab;font-size:12px}.v{font-size:20px;font-weight:600}
 .badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:13px;font-weight:600}
 .warn{background:#3a2a10;border:1px solid #7a5a1a;padding:10px 14px;border-radius:8px;color:#f0c674;margin:10px 0}</style></head><body>
-<h1>Demo: strategia trendowa BTC pod zasadami "challenge'u" prop firmy</h1>
+<h1>Demo: strategia trendowa S&amp;P 500 pod zasadami "challenge'u" prop firmy</h1>
 <div class="warn">To symulacja na WIRTUALNYCH pieniądzach. Nie ma tu prawdziwej firmy, prawdziwego konta ani prawdziwych zleceń.
 Zasady (cel +8%%, limit dzienny 5%%, limit całkowity 10%%, konto 10 000 USD) są reprezentatywne dla typowych firm, nie kopią żadnej konkretnej.</div>
 <div class="muted">Stan na koniec dnia %(day)s (UTC). Aktualizacja raz dziennie. Źródło cen: %(src)s.</div>
@@ -403,7 +415,7 @@ Zasady (cel +8%%, limit dzienny 5%%, limit całkowity 10%%, konto 10 000 USD) s�
 <h2>Kapitał w czasie</h2><div class="card">%(svg)s</div>
 <h2>Co strategia "myśli" dziś (9 reguł głosuje)</h2><div class="card"><table>%(rules)s</table></div>
 <h2>Historia prób</h2><div class="card"><table><tr><th>Nr</th><th>Faza</th><th>Start</th><th>Koniec</th><th>Dni</th><th>Wynik</th><th>Zmiana kapitału</th></tr>%(rows)s</table></div>
-<div class="muted" style="margin-top:20px">Symulacja na prawdziwych cenach BTC, koszty (prowizja 0,1%% + poślizg 0,03%%) uwzględnione. Nie jest poradą inwestycyjną i nie promuje konkretnej firmy typu prop trading.</div>
+<div class="muted" style="margin-top:20px">Symulacja na prawdziwych cenach S&amp;P 500 (^GSPC), koszty (spread ~0,01%%, zero prowizji) uwzględnione. Nie jest poradą inwestycyjną i nie promuje konkretnej firmy typu prop trading.</div>
 </body></html>""" % dict(day=d(hist[-1]["ts"]) if hist else "-", src=src, pcol=phase_col, plbl=phase_lbl, eq=eq, start=att["start_equity"],
                           days=(hist[-1]["ts"] - att["start_ts"]) / DAY if hist else 0, target=target_block,
                           dd=max(0, dist_daily), bard=bar(dist_daily, "#f0c674" if dist_daily < 40 else "#6ea8ff"),
