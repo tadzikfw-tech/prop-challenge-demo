@@ -105,10 +105,24 @@ def compute_series(closes):
 
 
 EXPOSURE_CAP = 0.50   # maks. udział BTC w koncie (patrz uzasadnienie w docstringu pliku)
+WEEKEND_FLAT_FUNDED = True   # konto "sfinansowane": zamykaj pozycje na weekend (reguła realnych firm)
 
 
 def target_at(series, i):
     return (sum(s[i] for s in series) / len(series)) * EXPOSURE_CAP
+
+
+def eff_target(phase, ts, series, i):
+    """Docelowa ekspozycja z uwzględnieniem reguły weekendowej.
+    W realnych firmach (np. FTMO) konto W FAZIE EWALUACJI może trzymać pozycje bez
+    ograniczeń, nawet przez weekend. Dopiero na koncie SFINANSOWANYM trzeba je
+    zamknąć przed weekendem (piątek) i można otworzyć znów w poniedziałek. Sobota
+    i niedziela = płasko (0% BTC), niezależnie od sygnału."""
+    if WEEKEND_FLAT_FUNDED and phase == "SFINANSOWANE":
+        weekday = datetime.datetime.utcfromtimestamp(ts / 1000).weekday()  # pon=0 ... nie=6
+        if weekday >= 4:   # piątek, sobota, niedziela
+            return 0.0
+    return target_at(series, i)
 
 
 # ------------------------------------------------------------------ dane
@@ -190,7 +204,7 @@ def new_account(capital, price, target, ts):
 
 # ------------------------------------------------------------------ maszyna stanu challenge'u
 def new_attempt(no, phase, start_equity, ts, price, series, i):
-    acc = new_account(start_equity, price, target_at(series, i), ts)
+    acc = new_account(start_equity, price, eff_target(phase, ts, series, i), ts)
     return dict(no=no, phase=phase, start_ts=ts, start_equity=start_equity, peak_equity=start_equity,
                 prev_close_equity=start_equity, acc=acc)
 
@@ -211,7 +225,7 @@ def close_attempt(att, ts, price, result, attempts_log, funded_stats):
 def process_day(state, ts, price, series, i, trades_log, hist, attempts_log, funded_stats):
     att = state["att"]
     acc = att["acc"]
-    tgt = target_at(series, i)
+    tgt = eff_target(att["phase"], ts, series, i)
     trades_before = len(trades_log)
     if abs(tgt - acc["target"]) > 1e-9:
         rebalance(acc, price, tgt, ts, trades_log)
