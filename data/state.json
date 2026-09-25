@@ -1,0 +1,1 @@
+{"n": 1, "attempts_passed": 0, "attempts_failed": 0, "funded_losses": 0, "att": {"no": 1, "phase": "EWALUACJA", "start_ts": 1790208000000, "start_equity": 10000.0, "peak_equity": 10000.0, "prev_close_equity": 10000.0, "acc": {"cash": 4995.0, "qty": 0.059216754387442096, "target": 0.5}, "_last_ts": 1790208000000}, "cum_payout_usd": 0.0, "cum_funded_days": 0.0}

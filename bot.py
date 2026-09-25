@@ -8,7 +8,15 @@ reprezentatywne dla typowych firm (np. FTMO-style), nie kopią żadnej konkretne
 
 STRATEGIA ZABLOKOWANA (nie zmieniamy jej w trakcie testu) - te same 9 reguł
 trendu co w bocie "btc-trend-demo": każda głosuje "trend rośnie" (1) / "nie" (0),
-udział BTC w koncie = głosy/9. Bez dźwigni, bez shortów.
+udział BTC w koncie = (głosy/9) x 50%. Bez dźwigni, bez shortów.
+
+Dlaczego 50%, nie 100%: backtest 2020-2026 pod tymi samymi zasadami pokazał, że
+100% ekspozycji i 50% dają podobny wynik finansowy netto, ale przy 50% mniejszy
+odsetek dni łamie limit dzienny (sam BTC potrafi spaść >=5% w jeden dzień średnio
+raz na ok. 24 dni - przy pełnej ekspozycji to od razu koniec próby). Niższe
+poziomy (20-35%) wypadały w backteście "lepiej" tylko dlatego, że próbka prób
+była zbyt mała, by cokolwiek z niej wnioskować. 50% to ostatnia decyzja przed
+zablokowaniem - dalej reguł (w tym tego mnożnika) już nie zmieniamy.
 
 ZASADY "CHALLENGE'U" (typowe, nie żadnej konkretnej firmy):
   - wirtualny kapitał konta: 10 000 USD
@@ -96,8 +104,11 @@ def compute_series(closes):
     return [f(closes) for _, f in RULES]
 
 
+EXPOSURE_CAP = 0.50   # maks. udział BTC w koncie (patrz uzasadnienie w docstringu pliku)
+
+
 def target_at(series, i):
-    return sum(s[i] for s in series) / len(series)
+    return (sum(s[i] for s in series) / len(series)) * EXPOSURE_CAP
 
 
 # ------------------------------------------------------------------ dane

@@ -1,0 +1,30 @@
+<!doctype html><html lang="pl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Demo: bot vs zasady prop firmy</title>
+<style>body{background:#0e1116;color:#e6e9ef;font:15px/1.5 Segoe UI,Arial,sans-serif;margin:0;padding:16px;max-width:980px;margin:auto}h1{font-size:20px;margin:0 0 4px}h2{font-size:16px;margin:26px 0 8px;color:#9fb0c8}
+.big{font-size:40px;font-weight:700;margin:4px 0}.card{background:#161b22;border:1px solid #262d38;border-radius:10px;padding:14px 16px;margin:10px 0}
+table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:6px 8px;border-bottom:1px solid #232a34;text-align:left}th{color:#8b98ab}.muted{color:#7d8899}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}.k{color:#8b98ab;font-size:12px}.v{font-size:20px;font-weight:600}
+.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:13px;font-weight:600}
+.warn{background:#3a2a10;border:1px solid #7a5a1a;padding:10px 14px;border-radius:8px;color:#f0c674;margin:10px 0}</style></head><body>
+<h1>Demo: strategia trendowa BTC pod zasadami "challenge'u" prop firmy</h1>
+<div class="warn">To symulacja na WIRTUALNYCH pieniądzach. Nie ma tu prawdziwej firmy, prawdziwego konta ani prawdziwych zleceń.
+Zasady (cel +8%, limit dzienny 5%, limit całkowity 10%, konto 10 000 USD) są reprezentatywne dla typowych firm, nie kopią żadnej konkretnej.</div>
+<div class="muted">Stan na koniec dnia 2026-09-24 (UTC). Aktualizacja raz dziennie. Źródło cen: Binance.</div>
+<div class="card"><span class="badge" style="background:#6ea8ff22;color:#6ea8ff">FAZA EWALUACJI — próba #1</span>
+<div class="big">9967.19 USD</div>
+<div class="muted">start tej próby: 10000 USD · dzień 0 próby</div></div>
+<div class="grid"><div class="card"><div class="k">Postęp do celu zysku (+8%)</div><div class="v">0%</div><div style='background:#222a35;border-radius:6px;height:10px;overflow:hidden'><div style='width:0%;background:#4cc38a;height:100%'></div></div></div>
+<div class="card"><div class="k">Zapas do limitu dziennego (dziś)</div><div class="v">93%</div><div style='background:#222a35;border-radius:6px;height:10px;overflow:hidden'><div style='width:93%;background:#6ea8ff;height:100%'></div></div></div>
+<div class="card"><div class="k">Zapas do limitu całkowitego</div><div class="v">97%</div><div style='background:#222a35;border-radius:6px;height:10px;overflow:hidden'><div style='width:97%;background:#6ea8ff;height:100%'></div></div></div></div>
+<h2>Wynik od początku testu</h2>
+<div class="grid"><div class="card"><div class="k">Prób ewaluacji (ukończonych)</div><div class="v">0</div></div>
+<div class="card"><div class="k">Zdanych</div><div class="v">0 (0%)</div></div>
+<div class="card"><div class="k">Niezdanych</div><div class="v">0</div></div>
+<div class="card"><div class="k">Dni w fazie "sfinansowane" łącznie</div><div class="v">0</div></div></div>
+<div class="grid"><div class="card"><div class="k">Szacowany koszt prób (500 zł/próba, poglądowo)</div><div class="v">125 USD (≈500 zł)</div></div>
+<div class="card"><div class="k">Symulowana wypłata z konta "sfinansowanego" (80% zysku)</div><div class="v">0.00 USD</div></div>
+<div class="card"><div class="k">Bilans: wypłata − koszt prób</div><div class="v" style="color:#e5534b">-125.00 USD</div></div></div>
+<h2>Kapitał w czasie</h2><div class="card"><p class='muted'>Wykres pojawi się po kilku dniach działania.</p></div>
+<h2>Co strategia "myśli" dziś (9 reguł głosuje)</h2><div class="card"><table><tr><td>Cena powyżej średniej z 50 dni</td><td style='color:#4cc38a'>▲ trend rośnie</td></tr><tr><td>Cena powyżej średniej z 100 dni</td><td style='color:#4cc38a'>▲ trend rośnie</td></tr><tr><td>Cena powyżej średniej z 150 dni</td><td style='color:#4cc38a'>▲ trend rośnie</td></tr><tr><td>Średnia 10 dni powyżej średniej 30 dni</td><td style='color:#4cc38a'>▲ trend rośnie</td></tr><tr><td>Średnia 20 dni powyżej średniej 50 dni</td><td style='color:#4cc38a'>▲ trend rośnie</td></tr><tr><td>Wybicie z 20-dniowego maksimum (wyjście: 10-dniowe minimum)</td><td style='color:#4cc38a'>▲ trend rośnie</td></tr><tr><td>Wybicie z 55-dniowego maksimum (wyjście: 20-dniowe minimum)</td><td style='color:#4cc38a'>▲ trend rośnie</td></tr><tr><td>Cena wyższa niż 30 dni temu</td><td style='color:#4cc38a'>▲ trend rośnie</td></tr><tr><td>Cena wyższa niż 90 dni temu</td><td style='color:#4cc38a'>▲ trend rośnie</td></tr></table></div>
+<h2>Historia prób</h2><div class="card"><table><tr><th>Nr</th><th>Faza</th><th>Start</th><th>Koniec</th><th>Dni</th><th>Wynik</th><th>Zmiana kapitału</th></tr><tr><td colspan='7' class='muted'>Jeszcze żadna próba się nie zakończyła.</td></tr></table></div>
+<div class="muted" style="margin-top:20px">Symulacja na prawdziwych cenach BTC, koszty (prowizja 0,1% + poślizg 0,03%) uwzględnione. Nie jest poradą inwestycyjną i nie promuje konkretnej firmy typu prop trading.</div>
+</body></html>
