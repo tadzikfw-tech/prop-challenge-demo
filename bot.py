@@ -26,7 +26,7 @@ więcej niż szum. Trzymamy się raz zablokowanej decyzji zamiast dopasowywać
 parametr pod każdy nowy rynek z osobna.
 
 ZASADY "CHALLENGE'U" (typowe, nie żadnej konkretnej firmy):
-  - wirtualny kapitał konta: 10 000 USD
+  - wirtualny kapitał konta: 50 000 USD
   - cel zysku (faza ewaluacji): +8%
   - limit straty dziennej: 5% (liczony od salda na koniec poprzedniego dnia)
   - limit straty całkowitej: 10% od startu próby (faza ewaluacji),
@@ -36,6 +36,16 @@ ZASADY "CHALLENGE'U" (typowe, nie żadnej konkretnej firmy):
   - typ konta: "Swing" (u FTMO dostępny tylko w 2-Step) - zwolniony z
     obowiązkowego zamykania pozycji na weekend/noc; dźwignia w Swing na
     indeksach i tak nie ogranicza nas, bo nigdy nie przekraczamy 50% ekspozycji
+
+ZMIANA KAPITAŁU 10k -> 50k (2026-09-28): sprawdziliśmy rynek pod kątem tańszych
+alternatyw na 50k (MyFundedFutures, FundedNext Rapid, For Traders, The5ers) -
+każda miała ciaśniejszy total drawdown (6-8% zamiast 10%, częściej jeszcze
+trailing zamiast statycznego), którego nasza strategia by nie wytrzymała
+(najgorszy odnotowany trailing DD w backteście: -9,82%). FTMO 2-Step 50k
+(365 USD, zwracane przy pierwszej wypłacie) zostaje jedyną sprawdzoną opcją -
+te same reguły 10%/5%, które już przeszły backtest, tylko z 5x kapitału.
+Opłata w kodzie (FEE_USD) to teraz realna, potwierdzona cena FTMO 50k 2-Step,
+nie szacunek jak wcześniej.
 """
 import os, json, csv, time, datetime, urllib.request
 
@@ -46,15 +56,15 @@ STATE = os.path.join(DATA, "state.json")
 ATTEMPTS = os.path.join(DATA, "attempts.csv")
 HIST = os.path.join(DATA, "history.csv")
 
-CAPITAL = 10_000.0
+CAPITAL = 50_000.0
 TARGET_PROFIT = 0.08
 DAILY_LOSS_LIMIT = 0.05
 EVAL_MAX_LOSS = 0.10
 FUNDED_MAX_LOSS = 0.10           # trailing od szczytu
 PROFIT_SPLIT = 0.80
-FEE_PLN = 500.0                  # szacunkowa, poglądowa opłata za jedną próbę
 USD_PLN = 4.0
-FEE_USD = FEE_PLN / USD_PLN
+FEE_USD = 365.0                  # realna cena FTMO 2-Step 50k (potwierdzona), zwracana przy 1. wypłacie
+FEE_PLN = FEE_USD * USD_PLN
 DAY = 86_400_000
 
 
@@ -396,7 +406,7 @@ table{width:100%%;border-collapse:collapse;font-size:13px}th,td{padding:6px 8px;
 .warn{background:#3a2a10;border:1px solid #7a5a1a;padding:10px 14px;border-radius:8px;color:#f0c674;margin:10px 0}</style></head><body>
 <h1>Demo: strategia trendowa S&amp;P 500 pod zasadami "challenge'u" prop firmy</h1>
 <div class="warn">To symulacja na WIRTUALNYCH pieniądzach. Nie ma tu prawdziwej firmy, prawdziwego konta ani prawdziwych zleceń.
-Zasady (cel +8%%, limit dzienny 5%%, limit całkowity 10%%, konto 10 000 USD) są reprezentatywne dla typowych firm, nie kopią żadnej konkretnej.</div>
+Zasady (cel +8%%, limit dzienny 5%%, limit całkowity 10%%, konto 50 000 USD) są reprezentatywne dla typowych firm, nie kopią żadnej konkretnej.</div>
 <div class="muted">Stan na koniec dnia %(day)s (UTC). Aktualizacja raz dziennie. Źródło cen: %(src)s.</div>
 <div class="card"><span class="badge" style="background:%(pcol)s22;color:%(pcol)s">%(plbl)s</span>
 <div class="big">%(eq).2f USD</div>

@@ -2,7 +2,7 @@
 
 Nasza jedyna sprawdzona strategia (9 reguł trendu, ta sama logika co w pierwszej wersji na BTC)
 puszczona codziennie w chmurze na **S&P 500** (indeks ^GSPC, u brokerów CFD "US500.cash") pod
-TYPOWYMI zasadami tzw. prop firmy: konto 10 000 USD (wirtualne), cel zysku +8%, limit straty
+TYPOWYMI zasadami tzw. prop firmy: konto 50 000 USD (wirtualne), cel zysku +8%, limit straty
 dziennej 5%, limit straty całkowitej 10%. Przy złamaniu limitu próba się kończy i następnego dnia
 startuje nowa, od zera. Po zdaniu: konto "sfinansowane" (80% zysku dla "tradera", limit całkowity
 liczony od szczytu), aż do kolejnego złamania limitu. Modelowany typ konta: "Swing" (u FTMO
@@ -12,6 +12,14 @@ Zmiana z BTC na S&P 500 (2026-09-25): większość realnych traderów zarabia na
 krypto; koszty na S&P 500 są rząd wielkości niższe (FTMO: zero prowizji, spread ~0,01%
 vs ~0,13% modelowane wcześniej dla BTC); S&P 500 prawie nigdy nie rusza się >=5% w jeden dzień
 (BTC robił to średnio co ~24 dni), więc limit dzienny straty jest rzadziej łamany przypadkiem.
+
+Zmiana kapitału z 10k na 50k (2026-09-28): sprawdziliśmy rynek pod kątem tańszych alternatyw na
+koncie 50k (MyFundedFutures, FundedNext Rapid, For Traders, The5ers) - każda miała ciaśniejszy
+total drawdown (6-8%, często dodatkowo trailing) niż FTMO, którego nasza strategia by nie
+wytrzymała (najgorszy odnotowany trailing DD w backteście: -9,82%). FTMO 2-Step 50k (365 USD,
+zwracane przy pierwszej wypłacie) zostaje jedyną sprawdzoną opcją - te same reguły 10%/5%, tylko
+z 5x kapitału. Wcześniejsza opłata w kodzie (165 USD) była szacunkiem; 365 USD to potwierdzona,
+realna cena FTMO 2-Step 50k.
 
 **To symulacja na wirtualnych pieniądzach. Nie ma tu żadnej prawdziwej firmy, konta ani zleceń.**
 Zasady są reprezentatywne dla branży (na podstawie publicznych statystyk, patrz niżej), nie kopią
@@ -35,8 +43,8 @@ Backtest naszej strategii pod tymi regułami na S&P 500, 2001–2026 (24 lata, d
 | Ukończonych prób ewaluacji | 3 |
 | Zdanych | 2 (67%) |
 | Kont "sfinansowanych" utraconych po zdaniu | 1 z 2 |
-| Konto obecnie aktywne, saldo (niezrealizowane) | +5 531 USD (od próby #2, wciąż trwa) |
-| Szacowany koszt prób (165 USD/próba) | 330 USD |
+| Konto obecnie aktywne, saldo (niezrealizowane) | +27 655 USD (od próby #2, wciąż trwa; przeliczone x5 z kapitału 10k na 50k) |
+| Szacowany koszt prób (365 USD/próba, potwierdzona cena FTMO 2-Step 50k) | 730 USD |
 
 **Uwaga na próbkę: 3 ukończone próby w 24 lata to za mało, by cokolwiek statystycznie wnioskować**
 o zdawalności — to jakościowa obserwacja, nie twardy wynik. Liczy się mechanizm: S&P 500 prawie
