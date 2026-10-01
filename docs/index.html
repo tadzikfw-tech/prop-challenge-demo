@@ -8,13 +8,13 @@ table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:6px 8px;b
 <h1>Demo: strategia trendowa S&amp;P 500 pod zasadami "challenge'u" prop firmy</h1>
 <div class="warn">To symulacja na WIRTUALNYCH pieniądzach. Nie ma tu prawdziwej firmy, prawdziwego konta ani prawdziwych zleceń.
 Zasady (cel +8%, limit dzienny 5%, limit całkowity 10%, konto 50 000 USD) są reprezentatywne dla typowych firm, nie kopią żadnej konkretnej.</div>
-<div class="muted">Stan na koniec dnia 2026-09-28 (UTC). Aktualizacja raz dziennie. Źródło cen: Yahoo Finance.</div>
+<div class="muted">Stan na koniec dnia 2026-09-29 (UTC). Aktualizacja raz dziennie. Źródło cen: Yahoo Finance.</div>
 <div class="card"><span class="badge" style="background:#6ea8ff22;color:#6ea8ff">FAZA EWALUACJI — próba #1</span>
-<div class="big">49815.84 USD</div>
-<div class="muted">start tej próby: 50000 USD · dzień 3 próby</div></div>
+<div class="big">49767.38 USD</div>
+<div class="muted">start tej próby: 50000 USD · dzień 4 próby</div></div>
 <div class="grid"><div class="card"><div class="k">Postęp do celu zysku (+8%)</div><div class="v">0%</div><div style='background:#222a35;border-radius:6px;height:10px;overflow:hidden'><div style='width:0%;background:#4cc38a;height:100%'></div></div></div>
-<div class="card"><div class="k">Zapas do limitu dziennego (dziś)</div><div class="v">99%</div><div style='background:#222a35;border-radius:6px;height:10px;overflow:hidden'><div style='width:99%;background:#6ea8ff;height:100%'></div></div></div>
-<div class="card"><div class="k">Zapas do limitu całkowitego</div><div class="v">96%</div><div style='background:#222a35;border-radius:6px;height:10px;overflow:hidden'><div style='width:96%;background:#6ea8ff;height:100%'></div></div></div></div>
+<div class="card"><div class="k">Zapas do limitu dziennego (dziś)</div><div class="v">98%</div><div style='background:#222a35;border-radius:6px;height:10px;overflow:hidden'><div style='width:98%;background:#6ea8ff;height:100%'></div></div></div>
+<div class="card"><div class="k">Zapas do limitu całkowitego</div><div class="v">95%</div><div style='background:#222a35;border-radius:6px;height:10px;overflow:hidden'><div style='width:95%;background:#6ea8ff;height:100%'></div></div></div></div>
 <h2>Wynik od początku testu</h2>
 <div class="grid"><div class="card"><div class="k">Prób ewaluacji (ukończonych)</div><div class="v">0</div></div>
 <div class="card"><div class="k">Zdanych</div><div class="v">0 (0%)</div></div>
@@ -23,7 +23,7 @@ Zasady (cel +8%, limit dzienny 5%, limit całkowity 10%, konto 50 000 USD) są r
 <div class="grid"><div class="card"><div class="k">Szacowany koszt prób (1460 zł/próba, poglądowo)</div><div class="v">365 USD (≈1460 zł)</div></div>
 <div class="card"><div class="k">Symulowana wypłata z konta "sfinansowanego" (80% zysku)</div><div class="v">0.00 USD</div></div>
 <div class="card"><div class="k">Bilans: wypłata − koszt prób</div><div class="v" style="color:#e5534b">-365.00 USD</div></div></div>
-<h2>Kapitał w czasie</h2><div class="card"><svg viewBox='0 0 900 280' width='100%'><polyline fill='none' stroke='#6ea8ff' stroke-width='2.5' points='12.0,136.5 888.0,147.9'/></svg><div class='muted'><span style='color:#6ea8ff'>━</span> faza ewaluacji &nbsp; <span style='color:#4cc38a'>━</span> konto sfinansowane &nbsp; <span style='color:#e5534b'>┊</span> nieudana próba / reset</div></div>
+<h2>Kapitał w czasie</h2><div class="card"><svg viewBox='0 0 900 280' width='100%'><polyline fill='none' stroke='#6ea8ff' stroke-width='2.5' points='12.0,135.3 669.0,146.7 888.0,149.1'/></svg><div class='muted'><span style='color:#6ea8ff'>━</span> faza ewaluacji &nbsp; <span style='color:#4cc38a'>━</span> konto sfinansowane &nbsp; <span style='color:#e5534b'>┊</span> nieudana próba / reset</div></div>
 <h2>Co strategia "myśli" dziś (9 reguł głosuje)</h2><div class="card"><table><tr><td>Cena powyżej średniej z 50 dni</td><td style='color:#4cc38a'>▲ trend rośnie</td></tr><tr><td>Cena powyżej średniej z 100 dni</td><td style='color:#4cc38a'>▲ trend rośnie</td></tr><tr><td>Cena powyżej średniej z 150 dni</td><td style='color:#4cc38a'>▲ trend rośnie</td></tr><tr><td>Średnia 10 dni powyżej średniej 30 dni</td><td style='color:#4cc38a'>▲ trend rośnie</td></tr><tr><td>Średnia 20 dni powyżej średniej 50 dni</td><td style='color:#4cc38a'>▲ trend rośnie</td></tr><tr><td>Wybicie z 20-dniowego maksimum (wyjście: 10-dniowe minimum)</td><td style='color:#4cc38a'>▲ trend rośnie</td></tr><tr><td>Wybicie z 55-dniowego maksimum (wyjście: 20-dniowe minimum)</td><td style='color:#e5534b'>▼ nie</td></tr><tr><td>Cena wyższa niż 30 dni temu</td><td style='color:#e5534b'>▼ nie</td></tr><tr><td>Cena wyższa niż 90 dni temu</td><td style='color:#4cc38a'>▲ trend rośnie</td></tr></table></div>
 <h2>Historia prób</h2><div class="card"><table><tr><th>Nr</th><th>Faza</th><th>Start</th><th>Koniec</th><th>Dni</th><th>Wynik</th><th>Zmiana kapitału</th></tr><tr><td colspan='7' class='muted'>Jeszcze żadna próba się nie zakończyła.</td></tr></table></div>
 <div class="muted" style="margin-top:20px">Symulacja na prawdziwych cenach S&amp;P 500 (^GSPC), koszty (spread ~0,01%, zero prowizji) uwzględnione. Nie jest poradą inwestycyjną i nie promuje konkretnej firmy typu prop trading.</div>
